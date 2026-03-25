@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FlowState Athlete</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #080808;
+    --off-black: #111;
+    --card: #141414;
+    --border: rgba(255,255,255,0.07);
+    --white: #f4f1ec;
+    --cream: #e8e2d9;
+    --accent: #c8f03a;
+    --accent-dark: #a5c92e;
+    --muted: #666;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 200;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.4rem 3rem;
+    background: rgba(8,8,8,0.88);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.55rem;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .nav-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--black);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.7rem 1.7rem;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .nav-btn:hover { background: var(--accent-dark); transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 9rem 2rem 6rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 25%, rgba(200,240,58,0.09) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 40% at 85% 75%, rgba(200,240,58,0.05) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px;
+    opacity: 0.025;
+    pointer-events: none;
+  }
+  .hero-pill {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(200,240,58,0.4);
+    padding: 0.45rem 1.2rem;
+    margin-bottom: 2.2rem;
+    position: relative;
+    animation: fadeUp 0.7s ease both;
+  }
+  .hero h1 {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(3.4rem, 10vw, 8.5rem);
+    line-height: 0.93;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    position: relative;
+    animation: fadeUp 0.8s 0.1s ease both;
+    max-width: 1100px;
+  }
+  .hero h1 .highlight { color: var(--accent); display: block; }
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    font-weight: 300;
+    color: var(--cream);
+    max-width: 560px;
+    line-height: 1.7;
+    margin: 2rem auto 0;
+    opacity: 0.85;
+    position: relative;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+  .hero-sub strong { font-weight: 600; color: var(--white); }
+  .hero-cta-wrap {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
+    position: relative;
+    animation: fadeUp 0.8s 0.35s ease both;
+  }
+  .btn-primary {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--black);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 1.1rem 3rem;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 0 40px rgba(200,240,58,0.25);
+  }
+  .btn-primary:hover { background: var(--accent-dark); transform: translateY(-2px); box-shadow: 0 0 60px rgba(200,240,58,0.35); }
+  .cta-note { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; }
+
+  .scroll-line {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    opacity: 0.35;
+    animation: fadeUp 1s 0.6s ease both;
+  }
+  .scroll-line span { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; }
+  .scroll-line-bar {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--white), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* STRIP */
+  .strip {
+    background: var(--accent);
+    color: var(--black);
+    padding: 1.3rem 2rem;
+    overflow: hidden;
+  }
+  .strip-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    letter-spacing: 0.2em;
+    white-space: nowrap;
+    flex-wrap: wrap;
+  }
+  .strip-dot { width: 6px; height: 6px; background: var(--black); border-radius: 50%; opacity: 0.4; flex-shrink: 0; }
+
+  /* SECTIONS */
+  section { padding: 7rem 2rem; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.2rem;
+  }
+  .section-title {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    line-height: 0.95;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+  .section-body {
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--cream);
+    opacity: 0.85;
+    max-width: 620px;
+  }
+
+  /* INTRO */
+  .intro { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .intro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+  .intro-visual {
+    position: relative;
+    height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .orb {
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 38%, rgba(200,240,58,0.22), rgba(200,240,58,0.04) 60%, transparent 80%);
+    border: 1px solid rgba(200,240,58,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: orbPulse 4s ease-in-out infinite;
+  }
+  .orb::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    border: 1px solid rgba(200,240,58,0.08);
+    animation: orbPulse 4s 1s ease-in-out infinite;
+  }
+  .orb::after {
+    content: '';
+    position: absolute;
+    inset: -44px;
+    border-radius: 50%;
+    border: 1px solid rgba(200,240,58,0.04);
+    animation: orbPulse 4s 2s ease-in-out infinite;
+  }
+  .orb-inner { text-align: center; position: relative; z-index: 1; }
+  .readiness-number { font-family: 'Anton', sans-serif; font-size: 5rem; line-height: 1; color: var(--accent); }
+  .readiness-label { font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); margin-top: 0.3rem; }
+
+  /* FEATURES */
+  .features-section { background: var(--off-black); }
+  .features-header { margin-bottom: 4rem; }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .feature-card {
+    background: var(--card);
+    padding: 3rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 0;
+    background: var(--accent);
+    transition: height 0.4s ease;
+  }
+  .feature-card:hover { background: #181818; }
+  .feature-card:hover::before { height: 100%; }
+  .feature-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    line-height: 1;
+    color: rgba(200,240,58,0.12);
+    margin-bottom: 1.5rem;
+    display: block;
+    transition: color 0.3s;
+  }
+  .feature-card:hover .feature-num { color: rgba(200,240,58,0.25); }
+  .feature-mode {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(200,240,58,0.1);
+    padding: 0.3rem 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(200,240,58,0.2);
+  }
+  .feature-title {
+    font-family: 'Anton', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin-bottom: 0.9rem;
+    line-height: 1.1;
+  }
+  .feature-desc { font-size: 0.92rem; font-weight: 300; line-height: 1.7; color: var(--cream); opacity: 0.75; }
+
+  /* FOR ATHLETES */
+  .for-athletes { position: relative; overflow: hidden; }
+  .for-athletes::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 70% at 90% 50%, rgba(200,240,58,0.06) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .athletes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+  .athletes-text .section-title { margin-bottom: 1.5rem; }
+  .athletes-text .section-body { margin-top: 1.5rem; }
+  .stat-row {
+    display: flex;
+    gap: 3rem;
+    margin-top: 3rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .stat-num { font-family: 'Anton', sans-serif; font-size: 3rem; color: var(--accent); line-height: 1; }
+  .stat-label { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 0.3rem; }
+  .athletes-visual { display: flex; flex-direction: column; gap: 1rem; }
+  .ui-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 1.4rem 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .ui-card:hover { border-color: rgba(200,240,58,0.3); transform: translateX(4px); }
+  .ui-card-icon {
+    width: 42px; height: 42px;
+    background: rgba(200,240,58,0.1);
+    border: 1px solid rgba(200,240,58,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .ui-card-title { font-size: 0.82rem; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+  .ui-card-sub { font-size: 0.75rem; color: var(--muted); font-weight: 300; }
+  .ui-card-val { margin-left: auto; font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--accent); letter-spacing: 0.05em; flex-shrink: 0; }
+
+  /* CTA */
+  .cta-section {
+    background: var(--accent);
+    color: var(--black);
+    text-align: center;
+    padding: 8rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-section::before {
+    content: 'FLOWSTATE';
+    position: absolute;
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(8rem, 20vw, 18rem);
+    opacity: 0.07;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    pointer-events: none;
+    color: var(--black);
+  }
+  .cta-section .section-label { color: rgba(0,0,0,0.5); }
+  .cta-section .section-title { color: var(--black); margin-bottom: 1.5rem; }
+  .cta-body {
+    font-size: 1.1rem;
+    font-weight: 400;
+    line-height: 1.7;
+    color: rgba(0,0,0,0.7);
+    max-width: 500px;
+    margin: 0 auto 2.5rem;
+  }
+  .btn-dark {
+    display: inline-block;
+    background: var(--black);
+    color: var(--accent);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 1.2rem 3.5rem;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-dark:hover { background: #1a1a1a; transform: translateY(-2px); }
+
+  /* FOOTER */
+  footer {
+    background: var(--off-black);
+    border-top: 1px solid var(--border);
+    padding: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.18em; color: var(--accent); }
+  .footer-text { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.05em; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes orbPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%       { transform: scale(1.04); opacity: 0.8; }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.35; }
+    50%       { opacity: 0.8; }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 800px) {
+    nav { padding: 1.2rem 1.5rem; }
+    .intro-grid, .athletes-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .intro-visual { height: 280px; }
+    .orb { width: 200px; height: 200px; }
+    .readiness-number { font-size: 3.5rem; }
+    .features-grid { grid-template-columns: 1fr; }
+    .stat-row { gap: 2rem; }
+    footer { flex-direction: column; text-align: center; }
+  }
+  @media (max-width: 500px) {
+    .strip-inner { gap: 1.5rem; font-size: 0.85rem; }
+    .strip-dot { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">FlowState</a>
+  <a class="nav-btn" href="https://docs.google.com/forms/d/e/1FAIpQLScQ38B1dksIiLHDFKDhtUuPN3W97O2dypHhWqqS6JF38EpIPA/viewform?fbzx=-3296553407871871749" target="_blank">Join Waitlist</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-pill">For Student-Athletes</div>
+  <h1>
+    Struggling to Stay<br>
+    <span class="highlight">Mentally Strong?</span>
+  </h1>
+  <p class="hero-sub">
+    Balancing school and sports is hard.<br>
+    <strong>FlowState is here to help you stop spiraling — and start performing.</strong>
+  </p>
+  <div class="hero-cta-wrap">
+    <a class="btn-primary" href="https://docs.google.com/forms/d/e/1FAIpQLScQ38B1dksIiLHDFKDhtUuPN3W97O2dypHhWqqS6JF38EpIPA/viewform?fbzx=-3296553407871871749" target="_blank">Click to Join Waitlist</a>
+    <span class="cta-note">Be part of the first beta group — spots are limited</span>
+  </div>
+  <div class="scroll-line">
+    <span>Scroll</span>
+    <div class="scroll-line-bar"></div>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-inner">
+    <span>All Athletes Struggle With This</span>
+    <div class="strip-dot"></div>
+    <span>FlowState Takes the Guesswork Out</span>
+    <div class="strip-dot"></div>
+    <span>Mental Performance, Simplified</span>
+  </div>
+</div>
+
+<!-- INTRO -->
+<section class="intro">
+  <div class="container">
+    <div class="intro-grid">
+      <div class="intro-text">
+        <p class="section-label">What is FlowState?</p>
+        <h2 class="section-title">Real-Time Mental Performance</h2>
+        <p class="section-body" style="margin-top:1.5rem;">
+          FlowState takes the guesswork out of mental performance with <strong style="color:var(--white);font-weight:600;">real-time biometric syncing</strong>, anxiety-shielding tools, and focus sessions designed just for student-athletes.
+        </p>
+      </div>
+      <div class="intro-visual">
+        <div class="orb">
+          <div class="orb-inner">
+            <div class="readiness-number">87</div>
+            <div class="readiness-label">Readiness Score</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section">
+  <div class="container">
+    <div class="features-header">
+      <p class="section-label">Core Features</p>
+      <h2 class="section-title">Built for Your Zone</h2>
+    </div>
+    <div class="features-grid">
+
+      <div class="feature-card">
+        <span class="feature-num">01</span>
+        <span class="feature-mode">Readiness Score</span>
+        <h3 class="feature-title">Find Your Zone Fast</h3>
+        <p class="feature-desc">See your real-time Readiness Score based on HRV data — know exactly where your mind and body stand before you compete.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-num">02</span>
+        <span class="feature-mode">Neuro-Focus Mode</span>
+        <h3 class="feature-title">Focus Smarter</h3>
+        <p class="feature-desc">Activate Neuro-Focus mode to silence distractions and lock into deep concentration when it matters most.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-num">03</span>
+        <span class="feature-mode">Pre-Game Reset</span>
+        <h3 class="feature-title">Stay Grounded</h3>
+        <p class="feature-desc">Access 60-second breathing patterns and visualization drills to anchor your focus and calm pre-game nerves instantly.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-num">04</span>
+        <span class="feature-mode">Recovery Debt</span>
+        <h3 class="feature-title">Plan Ahead</h3>
+        <p class="feature-desc">Get Recovery Debt notifications when your stress levels stay elevated too long — before burnout catches up to you.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOR ATHLETES -->
+<section class="for-athletes">
+  <div class="container">
+    <div class="athletes-grid">
+
+      <div class="athletes-text">
+        <p class="section-label">For Athletes, By Athletes</p>
+        <h2 class="section-title">Designed to End Performance Anxiety</h2>
+        <p class="section-body">
+          FlowState was designed by student-athletes, for student-athletes — to end one of sports' biggest hurdles: <strong style="color:var(--white);font-weight:600;">performance anxiety</strong>.
+        </p>
+        <div class="stat-row">
+          <div>
+            <div class="stat-num">60s</div>
+            <div class="stat-label">Pre-Game Reset</div>
+          </div>
+          <div>
+            <div class="stat-num">HRV</div>
+            <div class="stat-label">Live Biometrics</div>
+          </div>
+          <div>
+            <div class="stat-num">1:1</div>
+            <div class="stat-label">Built for You</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="athletes-visual">
+        <div class="ui-card">
+          <div class="ui-card-icon">⚡</div>
+          <div>
+            <div class="ui-card-title">Readiness Score</div>
+            <div class="ui-card-sub">Based on your HRV data</div>
+          </div>
+          <div class="ui-card-val">87</div>
+        </div>
+        <div class="ui-card">
+          <div class="ui-card-icon">🎯</div>
+          <div>
+            <div class="ui-card-title">Neuro-Focus Active</div>
+            <div class="ui-card-sub">Distractions silenced</div>
+          </div>
+          <div class="ui-card-val">ON</div>
+        </div>
+        <div class="ui-card">
+          <div class="ui-card-icon">🌬</div>
+          <div>
+            <div class="ui-card-title">Pre-Game Reset</div>
+            <div class="ui-card-sub">60-second breathing drill</div>
+          </div>
+          <div class="ui-card-val">GO</div>
+        </div>
+        <div class="ui-card">
+          <div class="ui-card-icon">🔔</div>
+          <div>
+            <div class="ui-card-title">Recovery Debt Alert</div>
+            <div class="ui-card-sub">Stress elevated — rest needed</div>
+          </div>
+          <div class="ui-card-val" style="color:#ff6b6b;">!</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- WAITLIST CTA -->
+<section class="cta-section">
+  <div style="position:relative;z-index:1;">
+    <p class="section-label">Limited Beta Spots</p>
+    <h2 class="section-title">Be Part of the<br>First Beta Group</h2>
+    <p class="cta-body">Join student-athletes who are ready to take control of their mental performance. Waitlist spots are limited — don't miss your chance.</p>
+    <a class="btn-dark" href="https://docs.google.com/forms/d/e/1FAIpQLScQ38B1dksIiLHDFKDhtUuPN3W97O2dypHhWqqS6JF38EpIPA/viewform?fbzx=-3296553407871871749" target="_blank">Click to Join Waitlist →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">FlowState Athlete</span>
+  <span class="footer-text">© 2025 FlowState Athlete · Designed by student-athletes, for student-athletes.</span>
+</footer>
+
+</body>
+</html>
